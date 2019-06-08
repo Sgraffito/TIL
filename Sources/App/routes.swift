@@ -12,9 +12,25 @@ public func routes(_ router: Router) throws {
         return "Hello, world!"
     }
 
-    // Example of configuring a controller
-    let todoController = TodoController()
-    router.get("todos", use: todoController.index)
-    router.post("todos", use: todoController.create)
-    router.delete("todos", Todo.parameter, use: todoController.delete)
+    // Post
+    router.post("api", "acronyms") { request -> Future<Acronym> in
+        do {
+            // Use Codeable to map the request's JSON to the Acronym model
+            let decodedResult: Future<Acronym> = try request.content.decode(Acronym.self)
+            // Extract the acronym once decoding is complete
+            return decodedResult.flatMap(to: Acronym.self) { acronym  in
+                // Now that the Acronym object has been created, we can save it using the request database connection
+                return acronym.save(on: request) // Saving the model returns a Future<Acronym>
+            }
+        } catch {
+            print("error decoding the request: \(request)")
+            return request.future(Acronym(short: "default", long: "default"))
+        }
+        
+        // Same as
+        //        return try request.content.decode(Acronym.self).flatMap(to: Acronym.self) { acronym in
+        //            return acronym.save(on: request) // Saving the model returns a Future<Acronym>
+        //        }
+
+    }
 }
