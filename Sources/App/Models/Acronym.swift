@@ -1,5 +1,6 @@
 import Vapor
-import FluentSQLite
+//imprt FluentSQLite÷
+import FluentMySQL
 
 final class Acronym: Codable {
     var id: Int? // conforms to the SQLiteModel protocol
@@ -17,7 +18,7 @@ final class Acronym: Codable {
 //    typealias Database = SQLiteDatabase
 //    typealias ID = Int
 //    public static var idKey: IDKey = \Acronym.id
-extension Acronym: SQLiteModel {}
+extension Acronym: MySQLModel {}
 
 // The table where the Model is saved
 extension Acronym: Migration {}
