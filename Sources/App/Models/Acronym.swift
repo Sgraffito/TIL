@@ -25,3 +25,6 @@ extension Acronym: Migration {}
 
 // Allows you to save the Model
 extension Acronym: Content {}
+
+// Extends type saftey to the Model
+extension Acronym: Parameter {}
