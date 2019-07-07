@@ -7,6 +7,7 @@ struct AcronymsController: RouteCollection {
     let search = "search"
     let first = "first"
     let sorted = "sorted"
+    let categories = "categories"
 
     func boot(router: Router) throws {
         let acronymsRoute = router.grouped(api, acronyms)
@@ -20,6 +21,9 @@ struct AcronymsController: RouteCollection {
         acronymsRoute.get(search, use: searchHandler)
         acronymsRoute.get(sorted, use: sortedHandler)
         acronymsRoute.get(Acronym.parameter, "user", use: getUserHandler)
+        acronymsRoute.post(Acronym.parameter, categories, Category.parameter, use: addCategoriesHandler)
+        acronymsRoute.get(Acronym.parameter, categories, use: getCategoriesHandler)
+        acronymsRoute.delete(Acronym.parameter, categories, Category.parameter, use: removeCategoriesHandler)
     }
     
     func getAllHandler(_ request: Request) throws -> Future<[Acronym]> {
@@ -106,6 +110,35 @@ struct AcronymsController: RouteCollection {
             .parameters.next(Acronym.self)
             .flatMap(to: User.self) { acronym in
                 return acronym.user.get(on: request)
+        }
+    }
+    
+    func addCategoriesHandler(_ request: Request) throws -> Future<HTTPStatus> {
+        return try flatMap(
+            to: HTTPStatus.self,
+            request.parameters.next(Acronym.self),
+            request.parameters.next(Category.self)) { acronym, category in
+                return acronym.categories
+                    .attach(category, on: request)
+                    .transform(to: HTTPStatus.created)
+        }
+    }
+    
+    func getCategoriesHandler(_ request: Request) throws -> Future<[Category]> {
+        return try request.parameters.next(Acronym.self)
+            .flatMap(to: [Category].self) { acronym in
+                try acronym.categories.query(on: request).all()
+        }
+    }
+    
+    func removeCategoriesHandler(_ request: Request) throws -> Future<HTTPStatus> {
+        return try flatMap(
+            to: HTTPStatus.self,
+            request.parameters.next(Acronym.self),
+            request.parameters.next(Category.self)) { acronym, category in
+                return acronym.categories
+                    .detach(category, on: request)
+                    .transform(to: .noContent)
         }
     }
 }

@@ -37,10 +37,12 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
 
     // Configure migrations
     var migrations = MigrationConfig()
+    migrations.add(model: Category.self, database: .mysql)
     // The model (i.e. Acronym must conform to the mySQLModel before this will work!
     migrations.add(model: User.self, database: .mysql)
     // Since there is a foreign key linking the Acronym table to the User table, the User table must be creted first
     migrations.add(model: Acronym.self, database: .mysql)
+    migrations.add(model: AcronymCategoryPivot.self, database: .mysql)
     services.register(migrations)
     
     // Lets you revert and migrate a database
