@@ -20,13 +20,22 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     // If using localhost, the environment variables wil be `nil`
     let hostname = Environment.get("DATABASE_HOSTNAME") ?? "localhost"
     let username = Environment.get("DATABASE_USER") ?? "vapor"
-    let databaseName = Environment.get("DATABASE_DB") ?? "vapor"
-    let password = Environment.get("DATABASE_PASSWORD") ?? "password"
+//    let databaseName = Environment.get("DATABASE_DB") ?? "vapor"
+    let databaseName: String
+    let databasePort: Int
     let defaultPort = 3306
-    let port = Environment.get("DATABASE_PORT") ?? "\(defaultPort)"
+    if (env == .testing) {
+        databaseName = "vapor-test"
+        databasePort = 5433
+    } else {
+        databaseName = Environment.get("DATABASE_DB") ?? "vapor"
+        databasePort = defaultPort
+    }
+    
+    let password = Environment.get("DATABASE_PASSWORD") ?? "password"
     let databaseConfig = MySQLDatabaseConfig(
         hostname: hostname,
-        port: Int(port) ?? defaultPort,
+        port: databasePort,
         username: username,
         password: password,
         database: databaseName)
