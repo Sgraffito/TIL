@@ -1,5 +1,6 @@
 import FluentMySQL
 import Vapor
+import Leaf
 
 /// Called before your application initializes.
 public func configure(_ config: inout Config, _ env: inout Environment, _ services: inout Services) throws {
@@ -58,4 +59,10 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     var commandConfig = CommandConfig.default()
     commandConfig.useFluentCommands()
     services.register(commandConfig)
+    
+    // Register the Leaf service
+    try services.register(LeafProvider())
+    
+    // Use Leaf renderer when asked for a ViewRender type
+    config.prefer(LeafRenderer.self, for: ViewRenderer.self)
 }
