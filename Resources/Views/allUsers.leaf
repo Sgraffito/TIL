@@ -1,0 +1,28 @@
+#set("content") {
+
+    <h1>#(title)</h1>
+
+    #if(count(users) > 0) {
+    <table class="table table-bordered table-hover">
+        <thead class="thead-light">
+            <tr>
+                <th>User</th>
+                <th>Username</th>
+            </tr>
+        </thead>
+        <tbody>
+            #for(user in users) {
+            <tr>
+                <td><a href="/users/#(user.id)">#(user.name)</a></td>
+                <td>#(user.username)</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+    } else {
+    <h2>There are no users yet!</h2>
+    }
+
+}
+
+#embed("base")
